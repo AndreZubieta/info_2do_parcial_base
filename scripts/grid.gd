@@ -12,6 +12,10 @@ var state
 @export var offset: int
 @export var y_offset: int
 
+@onready var swap_sound = $"../swap_sound"
+@onready var match_sound = $"../match_sound"
+@onready var invalid_sound = $"../invalid_sound"
+
 # piece array
 var possible_pieces = [
 	preload("res://scenes/blue_piece.tscn"),
@@ -156,6 +160,9 @@ func swap_pieces(column, row, direction: Vector2):
 	# actívala aquí (su efecto reemplaza a la búsqueda normal de combinaciones).
 	# TODO (PARCIAL · B2): un intercambio válido consume una jugada. Decide dónde
 	# descontar el contador: aquí, o en destroy_matched() solo si hubo combinación.
+	moves_left -= 1 #Aquí porque en destroy_matched() se descuenta si hubo cascada
+	counter_changed.emit(moves_left)
+	swap_sound.play()
 	if not move_checked:
 		find_matches()
 
@@ -168,6 +175,7 @@ func store_info(first_piece, other_piece, place, direction):
 func swap_back():
 	if piece_one != null and piece_two != null:
 		swap_pieces(last_place.x, last_place.y, last_direction)
+		invalid_sound.play()
 	state = MOVE
 	move_checked = false
 
@@ -246,8 +254,7 @@ func destroy_matched():
 	move_checked = true
 	if was_matched:	
 		score_changed.emit(score)
-		moves_left -= 1 
-		counter_changed.emit(moves_left)
+		match_sound.play()
 		collapse_timer.start()
 	else:
 		swap_back()

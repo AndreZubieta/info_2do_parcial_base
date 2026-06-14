@@ -4,6 +4,9 @@
 [ext_resource type="PackedScene" uid="uid://bt33j5dwxano3" path="res://scenes/top_ui.tscn" id="2_wrbvl"]
 [ext_resource type="Texture2D" uid="uid://cdunkljd6up72" path="res://assets/bottom_ui.png" id="3_jy0d4"]
 [ext_resource type="Script" uid="uid://biuagxx08tqcb" path="res://scripts/grid.gd" id="4_4jr62"]
+[ext_resource type="AudioStream" uid="uid://dqbp8omxn5l8p" path="res://assets/Match 3 Sounds/Match 3 Sounds/Sounds/1.ogg" id="5_u5sy4"]
+[ext_resource type="AudioStream" uid="uid://bsxhvyx217rix" path="res://assets/Match 3 Sounds/Match 3 Sounds/Sounds/4.ogg" id="6_gee14"]
+[ext_resource type="AudioStream" uid="uid://b1mnrv4entm4v" path="res://assets/Match 3 Sounds/Match 3 Sounds/Sounds/7.ogg" id="7_0tnpc"]
 
 [node name="Game" type="Node2D" unique_id=2023187269]
 
@@ -77,6 +80,15 @@ offset_right = 443.0
 offset_bottom = 846.0
 theme_override_font_sizes/font_size = 60
 text = "Restart"
+
+[node name="swap_sound" type="AudioStreamPlayer2D" parent="." unique_id=1618095080]
+stream = ExtResource("5_u5sy4")
+
+[node name="match_sound" type="AudioStreamPlayer2D" parent="." unique_id=1543503694]
+stream = ExtResource("6_gee14")
+
+[node name="invalid_sound" type="AudioStreamPlayer2D" parent="." unique_id=1702439543]
+stream = ExtResource("7_0tnpc")
 
 [connection signal="timeout" from="grid/destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="grid/collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
