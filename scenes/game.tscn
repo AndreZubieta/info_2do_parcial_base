@@ -1,26 +1,26 @@
-[gd_scene load_steps=5 format=3 uid="uid://cruh8bbcfvyvr"]
+[gd_scene format=3 uid="uid://cruh8bbcfvyvr"]
 
 [ext_resource type="Texture2D" uid="uid://brp4euwugc18f" path="res://assets/background.png" id="1_blg2x"]
 [ext_resource type="PackedScene" uid="uid://bt33j5dwxano3" path="res://scenes/top_ui.tscn" id="2_wrbvl"]
 [ext_resource type="Texture2D" uid="uid://cdunkljd6up72" path="res://assets/bottom_ui.png" id="3_jy0d4"]
 [ext_resource type="Script" uid="uid://biuagxx08tqcb" path="res://scripts/grid.gd" id="4_4jr62"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" unique_id=2023187269]
 
-[node name="background" type="TextureRect" parent="."]
+[node name="background" type="TextureRect" parent="." unique_id=658452306]
 offset_right = 576.0
 offset_bottom = 1024.0
 texture = ExtResource("1_blg2x")
 
-[node name="top_ui" parent="." instance=ExtResource("2_wrbvl")]
+[node name="top_ui" parent="." unique_id=277122798 instance=ExtResource("2_wrbvl")]
 
-[node name="bottom_ui" type="TextureRect" parent="."]
+[node name="bottom_ui" type="TextureRect" parent="." unique_id=1144157391]
 offset_top = 928.0
 offset_right = 576.0
 offset_bottom = 1020.0
 texture = ExtResource("3_jy0d4")
 
-[node name="grid" type="Node2D" parent="."]
+[node name="grid" type="Node2D" parent="." unique_id=220801222]
 script = ExtResource("4_4jr62")
 width = 8
 height = 10
@@ -29,17 +29,54 @@ y_start = 800
 offset = 64
 y_offset = 2
 
-[node name="destroy_timer" type="Timer" parent="grid"]
+[node name="destroy_timer" type="Timer" parent="grid" unique_id=1875989565]
 wait_time = 0.5
 one_shot = true
 
-[node name="collapse_timer" type="Timer" parent="grid"]
+[node name="collapse_timer" type="Timer" parent="grid" unique_id=132788167]
 wait_time = 0.5
 one_shot = true
 
-[node name="refill_timer" type="Timer" parent="grid"]
+[node name="refill_timer" type="Timer" parent="grid" unique_id=2009135989]
 wait_time = 0.5
 one_shot = true
+
+[node name="GameOverPanel" type="Control" parent="." unique_id=345310484]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Background" type="ColorRect" parent="GameOverPanel" unique_id=643566178]
+layout_mode = 0
+offset_right = 574.0
+offset_bottom = 1018.0
+color = Color(0, 0, 0, 0.5294118)
+
+[node name="ResultLabel" type="Label" parent="GameOverPanel" unique_id=919948544]
+layout_mode = 0
+offset_left = 76.0
+offset_top = 452.0
+offset_right = 510.0
+offset_bottom = 562.0
+theme_override_font_sizes/font_size = 80
+text = "Game Over"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="GameOverPanel" unique_id=1219771452]
+layout_mode = 0
+offset_left = 150.0
+offset_top = 728.0
+offset_right = 443.0
+offset_bottom = 846.0
+theme_override_font_sizes/font_size = 60
+text = "Restart"
 
 [connection signal="timeout" from="grid/destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="grid/collapse_timer" to="grid" method="_on_collapse_timer_timeout"]

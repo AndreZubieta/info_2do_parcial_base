@@ -51,11 +51,12 @@ var is_controlling = false
 # TODO (PARCIAL · B1/B2): declara aquí el puntaje y el contador (y sus señales, si las usas).
 var score: int = 0
 var moves_left: int = 0
+var target_score := 1000
 
 signal piece_destroyed(amount: int)
 signal score_changed(new_score: int)
 signal counter_changed(move_counter: int)
-
+signal game_finished(won: bool)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -231,7 +232,6 @@ func find_matches():
 	
 func destroy_matched():
 	var was_matched = false
-	var match_score = 0
 
 	for i in width:
 		for j in height:
@@ -240,13 +240,11 @@ func destroy_matched():
 				# TODO (PARCIAL · B1): suma puntaje por cada pieza destruida (o por
 				# combinación) y emite score_changed para actualizar el HUD.
 				score += 100
-				score_changed.emit(score)
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
 
 	move_checked = true
-	if was_matched:
-		score += match_score
+	if was_matched:	
 		score_changed.emit(score)
 		moves_left -= 1 
 		counter_changed.emit(moves_left)
@@ -301,6 +299,14 @@ func check_after_refill():
 	# El tablero quedó estable: no hay más combinaciones en cascada.
 	# TODO (PARCIAL · M1): verifica si se cumplió o falló el objetivo del nivel
 	# (puntaje meta, piezas recolectadas, etc.) y dispara victoria o derrota.
+	if score >= target_score:
+		game_over(true)
+		return
+
+	if moves_left <= 0:
+		game_over(false)
+		return
+
 	# TODO (PARCIAL · M2): comprueba si todavía existe alguna jugada válida; si no,
 	# rebaraja el tablero hasta que haya al menos una.
 	state = MOVE
@@ -315,8 +321,9 @@ func _on_collapse_timer_timeout():
 func _on_refill_timer_timeout():
 	refill_columns()
 	
-func game_over():
+func game_over(won: bool):
 	state = WAIT
+	game_finished.emit(won)
 	# TODO (PARCIAL · B3): muestra la pantalla final (victoria o derrota), detén la
 	# entrada del jugador y ofrece reiniciar la partida. Emite game_finished(gano).
 	# TODO (PARCIAL · M4): guarda el progreso (nivel alcanzado) y el mejor puntaje
