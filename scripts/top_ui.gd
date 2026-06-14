@@ -51,16 +51,16 @@ func restart_game():
 	get_tree().reload_current_scene()
 
 func next_level():
-	grid.load_next_level()
+	GameManager.next_level()
 	get_tree().reload_current_scene()
 
 func update_level():
-	var level = grid.get_current_level()
+	var level = GameManager.get_current_level()
 	print("LEVEL RAW:", level)
 	level_label.text = level["name"]
 
 func update_goal():
-	var level = grid.get_current_level()
+	var level = GameManager.get_current_level()
 
 	if level["goal_type"] == "score":
 		goal_label.text = "Goal\n%d" % level["goal_value"]

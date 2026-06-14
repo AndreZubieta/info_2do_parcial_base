@@ -55,10 +55,6 @@ var is_controlling = false
 # TODO (PARCIAL · B1/B2): declara aquí el puntaje y el contador (y sus señales, si las usas).
 
 var score: int = 0
-
-var levels = []
-var current_level_index = 0
-var current_level = {}
 var collected = 0
 
 var moves_left = 0
@@ -73,6 +69,10 @@ signal game_finished(won: bool)
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	load_levels()
+	var current_level = GameManager.get_current_level()
+
+	moves_left = current_level["moves"]
+	target_score = current_level["goal_value"]
 	state = MOVE
 	randomize()
 
@@ -108,23 +108,12 @@ func in_grid(column, row):
 func load_levels():
 	var file = FileAccess.open("res://levels.json", FileAccess.READ)
 	var text = file.get_as_text()
-	levels = JSON.parse_string(text)
-	print("LEVELS RAW:", levels)
-	current_level = levels[current_level_index]
 
-	moves_left = current_level["moves"]
-	target_score = current_level["goal_value"]
+	GameManager.levels = JSON.parse_string(text)
 
 func get_current_level():
+	var current_level = GameManager.get_current_level()
 	return current_level
-
-func load_next_level():
-	current_level_index += 1
-
-	if current_level_index >= levels.size():
-		current_level_index = 0 # or stop game
-
-	current_level = levels[current_level_index]
 
 func spawn_pieces():
 	for i in width:
@@ -277,7 +266,7 @@ func destroy_matched():
 				# combinación) y emite score_changed para actualizar el HUD.
 				score += 100
 				var piece_color = all_pieces[i][j].color
-
+				var current_level = GameManager.get_current_level()
 				if current_level["goal_type"] == "collect_color":
 					if piece_color == current_level["goal_color"]:
 						collected += 1
@@ -341,8 +330,10 @@ func check_after_refill():
 				destroy_timer.start()
 				return
 	# El tablero quedó estable: no hay más combinaciones en cascada.
-	# TODO (PARCIAL · M1): verifica si se cumplió o falló el objetivo del nivel
+	# TODO (PARCIAL · M1): verifica si se cumplió o f	alló el objetivo del nivel
 	# (puntaje meta, piezas recolectadas, etc.) y dispara victoria o derrota.
+	var current_level = GameManager.get_current_level()
+
 	if current_level["goal_type"] == "score":
 		if score >= target_score:
 			game_over(true)
