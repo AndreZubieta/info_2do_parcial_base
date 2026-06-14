@@ -12,8 +12,6 @@ font_size = 24
 font = ExtResource("2_pei76")
 font_size = 60
 
-[sub_resource type="Theme" id="Theme_sh3ln"]
-
 [node name="top_ui" type="TextureRect" unique_id=1290658460]
 offset_right = 576.0
 offset_bottom = 192.0
@@ -27,7 +25,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = 16.0
 offset_top = 18.0
-offset_right = -15.0
+offset_right = -10.0
 offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -37,25 +35,38 @@ layout_mode = 2
 theme_override_constants/separation = 32
 alignment = 1
 
-[node name="score_label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=2073733128]
-layout_mode = 2
+[node name="goal_label" type="Label" parent="." unique_id=400083213]
+layout_mode = 0
+offset_left = 401.0
+offset_top = 16.0
+offset_right = 563.0
+offset_bottom = 141.0
 size_flags_horizontal = 3
 size_flags_vertical = 5
 text = "000"
 label_settings = SubResource("LabelSettings_yrpvj")
 horizontal_alignment = 1
 
-[node name="counter_label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1159968094]
-layout_mode = 2
+[node name="counter_label" type="Label" parent="." unique_id=1159968094]
+layout_mode = 0
+offset_left = 165.0
+offset_top = 26.0
+offset_right = 424.0
+offset_bottom = 151.0
 size_flags_horizontal = 3
 size_flags_vertical = 5
 text = "00"
 label_settings = SubResource("LabelSettings_8bjlm")
 horizontal_alignment = 1
 
-[node name="goal_label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=400083213]
-layout_mode = 2
+[node name="score_label" type="Label" parent="." unique_id=2073733128]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 20.0
+offset_right = 165.0
+offset_bottom = 90.0
 size_flags_horizontal = 3
 size_flags_vertical = 5
-label_settings = SubResource("LabelSettings_yrpvj")
 text = "000"
+label_settings = SubResource("LabelSettings_yrpvj")
+horizontal_alignment = 1

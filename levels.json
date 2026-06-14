@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Nivel 1: Introducción",
+    "moves": 20,
+    "goal_type": "score",
+    "goal_value": 1000
+  },
+  {
+    "name": "Nivel 2: Green Hunt",
+    "moves": 18,
+    "goal_type": "collect_color",
+    "goal_color": "green",
+    "goal_value": 20
+  }
+]

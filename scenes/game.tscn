@@ -23,6 +23,16 @@ offset_right = 576.0
 offset_bottom = 1020.0
 texture = ExtResource("3_jy0d4")
 
+[node name="LevelLabel" type="Label" parent="bottom_ui" unique_id=1643819759]
+layout_mode = 0
+offset_left = 19.0
+offset_top = 17.0
+offset_right = 555.0
+offset_bottom = 73.0
+text = "Level"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [node name="grid" type="Node2D" parent="." unique_id=220801222]
 script = ExtResource("4_4jr62")
 width = 8
@@ -74,12 +84,21 @@ vertical_alignment = 1
 
 [node name="RestartButton" type="Button" parent="GameOverPanel" unique_id=1219771452]
 layout_mode = 0
-offset_left = 150.0
+offset_left = 204.0
 offset_top = 728.0
 offset_right = 443.0
 offset_bottom = 846.0
 theme_override_font_sizes/font_size = 60
 text = "Restart"
+
+[node name="NextLevelButton" type="Button" parent="GameOverPanel" unique_id=2132299314]
+layout_mode = 0
+offset_left = 68.0
+offset_top = 584.0
+offset_right = 450.0
+offset_bottom = 687.0
+theme_override_font_sizes/font_size = 60
+text = "Next Level"
 
 [node name="swap_sound" type="AudioStreamPlayer2D" parent="." unique_id=1618095080]
 stream = ExtResource("5_u5sy4")

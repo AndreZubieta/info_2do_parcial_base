@@ -53,9 +53,17 @@ var is_controlling = false
 #   signal counter_changed(restantes: int)        # movimientos o segundos, tú decides
 #   signal game_finished(gano: bool)
 # TODO (PARCIAL · B1/B2): declara aquí el puntaje y el contador (y sus señales, si las usas).
+
 var score: int = 0
-var moves_left: int = 0
-var target_score := 1000
+
+var levels = []
+var current_level_index = 0
+var current_level = {}
+var collected = 0
+
+var moves_left = 0
+var target_score = 0
+var move_finished: bool = true
 
 signal piece_destroyed(amount: int)
 signal score_changed(new_score: int)
@@ -64,11 +72,11 @@ signal game_finished(won: bool)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	load_levels()
 	state = MOVE
 	randomize()
 
 	score = 0
-	moves_left = 20
 
 	score_changed.emit(score)
 	counter_changed.emit(moves_left)
@@ -97,6 +105,27 @@ func pixel_to_grid(pixel_x, pixel_y):
 func in_grid(column, row):
 	return column >= 0 and column < width and row >= 0 and row < height
 	
+func load_levels():
+	var file = FileAccess.open("res://levels.json", FileAccess.READ)
+	var text = file.get_as_text()
+	levels = JSON.parse_string(text)
+	print("LEVELS RAW:", levels)
+	current_level = levels[current_level_index]
+
+	moves_left = current_level["moves"]
+	target_score = current_level["goal_value"]
+
+func get_current_level():
+	return current_level
+
+func load_next_level():
+	current_level_index += 1
+
+	if current_level_index >= levels.size():
+		current_level_index = 0 # or stop game
+
+	current_level = levels[current_level_index]
+
 func spawn_pieces():
 	for i in width:
 		for j in height:
@@ -160,8 +189,7 @@ func swap_pieces(column, row, direction: Vector2):
 	# actívala aquí (su efecto reemplaza a la búsqueda normal de combinaciones).
 	# TODO (PARCIAL · B2): un intercambio válido consume una jugada. Decide dónde
 	# descontar el contador: aquí, o en destroy_matched() solo si hubo combinación.
-	moves_left -= 1 #Aquí porque en destroy_matched() se descuenta si hubo cascada
-	counter_changed.emit(moves_left)
+	move_finished = true
 	swap_sound.play()
 	if not move_checked:
 		find_matches()
@@ -248,11 +276,20 @@ func destroy_matched():
 				# TODO (PARCIAL · B1): suma puntaje por cada pieza destruida (o por
 				# combinación) y emite score_changed para actualizar el HUD.
 				score += 100
+				var piece_color = all_pieces[i][j].color
+
+				if current_level["goal_type"] == "collect_color":
+					if piece_color == current_level["goal_color"]:
+						collected += 1
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
 
 	move_checked = true
 	if was_matched:	
+		if move_finished:
+			moves_left -= 1
+			counter_changed.emit(moves_left)
+			move_finished = false
 		score_changed.emit(score)
 		match_sound.play()
 		collapse_timer.start()
@@ -306,9 +343,15 @@ func check_after_refill():
 	# El tablero quedó estable: no hay más combinaciones en cascada.
 	# TODO (PARCIAL · M1): verifica si se cumplió o falló el objetivo del nivel
 	# (puntaje meta, piezas recolectadas, etc.) y dispara victoria o derrota.
-	if score >= target_score:
-		game_over(true)
-		return
+	if current_level["goal_type"] == "score":
+		if score >= target_score:
+			game_over(true)
+			return
+
+	if current_level["goal_type"] == "collect_color":
+		if collected >= current_level["goal_value"]:
+			game_over(true)
+			return
 
 	if moves_left <= 0:
 		game_over(false)
