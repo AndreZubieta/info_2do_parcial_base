@@ -8,6 +8,7 @@ extends TextureRect
 @onready var restart_button = get_parent().get_node("GameOverPanel/RestartButton")
 @onready var next_level_button = get_parent().get_node("GameOverPanel/NextLevelButton")
 @onready var level_label = get_parent().get_parent().get_node("Game/bottom_ui/LevelLabel")
+@onready var no_moves_label = get_parent().get_node("NoMoreMovesLabel")
 
 var current_score = 0
 var current_count = 0
@@ -24,6 +25,9 @@ func _ready():
 	grid.score_changed.connect(update_score)
 	grid.counter_changed.connect(update_counter)
 	grid.game_finished.connect(show_game_over)
+	grid.no_more_moves.connect(on_no_more_moves)
+	grid.board_reshuffled.connect(board_reshuffled)
+
 	restart_button.pressed.connect(restart_game)
 	next_level_button.pressed.connect(next_level)
 	await get_tree().process_frame
@@ -82,3 +86,9 @@ func update_counter(restantes: int) -> void:
 	current_count = restantes
 	# TODO (PARCIAL · B2): refleja current_count en counter_label.text.
 	counter_label.text = "%d" % current_count
+
+func on_no_more_moves():
+	no_moves_label.visible = true
+
+func board_reshuffled():
+	no_moves_label.visible = false

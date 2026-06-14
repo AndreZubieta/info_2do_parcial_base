@@ -1,5 +1,11 @@
 [
   {
+    "name": "Nivel 0 (TEST - No Moves Available Fixed Board)",
+    "moves": 20,
+    "goal_type": "score",
+    "goal_value": 500
+  },
+  {
     "name": "Nivel 1: Introducción",
     "moves": 20,
     "goal_type": "score",

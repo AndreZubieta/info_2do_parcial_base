@@ -109,6 +109,18 @@ stream = ExtResource("6_gee14")
 [node name="invalid_sound" type="AudioStreamPlayer2D" parent="." unique_id=1702439543]
 stream = ExtResource("7_0tnpc")
 
+[node name="NoMoreMovesLabel" type="Label" parent="." unique_id=738690328]
+visible = false
+offset_left = 36.0
+offset_top = 308.0
+offset_right = 559.0
+offset_bottom = 662.0
+theme_override_font_sizes/font_size = 60
+text = "No more Moves... 
+Shuffling"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="timeout" from="grid/destroy_timer" to="grid" method="_on_destroy_timer_timeout"]
 [connection signal="timeout" from="grid/collapse_timer" to="grid" method="_on_collapse_timer_timeout"]
 [connection signal="timeout" from="grid/refill_timer" to="grid" method="_on_refill_timer_timeout"]

@@ -65,6 +65,8 @@ signal piece_destroyed(amount: int)
 signal score_changed(new_score: int)
 signal counter_changed(move_counter: int)
 signal game_finished(won: bool)
+signal no_more_moves
+signal board_reshuffled
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -82,7 +84,13 @@ func _ready():
 	counter_changed.emit(moves_left)
 
 	all_pieces = make_2d_array()
-	spawn_pieces()
+
+	if current_level["name"] == "Nivel 0 (TEST - No Moves Available Fixed Board)":
+		spawn_level_0_pattern()
+		await get_tree().create_timer(2.0).timeout
+		check_after_refill()
+	else:
+		spawn_pieces()
 
 func make_2d_array():
 	var array = []
@@ -322,7 +330,7 @@ func refill_columns():
 				
 	check_after_refill()
 
-func check_after_refill():
+func check_after_refill() -> void:
 	for i in width:
 		for j in height:
 			if all_pieces[i][j] != null and match_at(i, j, all_pieces[i][j].color):
@@ -347,6 +355,11 @@ func check_after_refill():
 	if moves_left <= 0:
 		game_over(false)
 		return
+	if not has_valid_moves():
+		no_more_moves.emit()
+		await get_tree().create_timer(5.0).timeout
+		reshuffle_board()	
+		board_reshuffled.emit()
 
 	# TODO (PARCIAL · M2): comprueba si todavía existe alguna jugada válida; si no,
 	# rebaraja el tablero hasta que haya al menos una.
@@ -373,3 +386,101 @@ func game_over(won: bool):
 # TODO (PARCIAL · M2): funciones sugeridas para detectar el bloqueo del tablero.
 # func hay_jugadas_validas() -> bool:
 # func rebarajar() -> void:
+
+# M2 - Valid Move available?
+func swap_creates_match(x, y, dir: Vector2) -> bool:
+	var a = all_pieces[x][y]
+	var b = all_pieces[x + dir.x][y + dir.y]
+
+	if a == null or b == null:
+		return false
+
+	# temporarily swap in data (no movement)
+	all_pieces[x][y] = b
+	all_pieces[x + dir.x][y + dir.y] = a
+
+	var result = false
+
+	# check both positions for matches
+	if check_match_at(x, y) or check_match_at(x + dir.x, y + dir.y):
+		result = true
+
+	# revert swap
+	all_pieces[x][y] = a
+	all_pieces[x + dir.x][y + dir.y] = b
+
+	return result
+
+func check_match_at(i, j) -> bool:
+	if all_pieces[i][j] == null:
+		return false
+
+	var color = all_pieces[i][j].color
+
+	# horizontal
+	if i > 0 and i < width - 1:
+		if all_pieces[i - 1][j] != null and all_pieces[i + 1][j] != null:
+			if all_pieces[i - 1][j].color == color and all_pieces[i + 1][j].color == color:
+				return true
+
+	# vertical
+	if j > 0 and j < height - 1:
+		if all_pieces[i][j - 1] != null and all_pieces[i][j + 1] != null:
+			if all_pieces[i][j - 1].color == color and all_pieces[i][j + 1].color == color:
+				return true
+
+	return false
+
+func has_valid_moves() -> bool:
+	var dirs = [
+		Vector2(1, 0),
+		Vector2(0, 1)
+	]
+
+	for i in width:
+		for j in height:
+			for d in dirs:
+				if in_grid(i + d.x, j + d.y):
+					if swap_creates_match(i, j, d):
+						return true
+
+	return false
+
+func reshuffle_board():
+	var flat = []
+
+	# collect all pieces
+	for i in width:
+		for j in height:
+			if all_pieces[i][j] != null:
+				flat.append(all_pieces[i][j])
+
+	# shuffle list
+	flat.shuffle()
+
+	# put back into grid
+	var index = 0
+	for i in width:
+		for j in height:
+			all_pieces[i][j] = flat[index]
+			all_pieces[i][j].position = grid_to_pixel(i, j)
+			index += 1
+
+	# ensure no instant matches
+	if not has_valid_moves():
+		reshuffle_board()
+
+func spawn_level_0_pattern():
+	for i in width:
+		for j in height:
+
+			# shift each row so it starts different
+			var index = (i + j) % possible_pieces.size()
+
+			var piece_scene = possible_pieces[index]
+			var piece = piece_scene.instantiate()
+
+			add_child(piece)
+			piece.position = grid_to_pixel(i, j)
+
+			all_pieces[i][j] = piece
