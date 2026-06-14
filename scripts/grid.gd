@@ -50,8 +50,12 @@ var is_controlling = false
 #   signal game_finished(gano: bool)
 # TODO (PARCIAL · B1/B2): declara aquí el puntaje y el contador (y sus señales, si las usas).
 var score: int = 0
+var moves_left: int = 0
+
 signal piece_destroyed(amount: int)
 signal score_changed(new_score: int)
+signal counter_changed(move_counter: int)
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -59,8 +63,10 @@ func _ready():
 	randomize()
 
 	score = 0
+	moves_left = 20
 
 	score_changed.emit(score)
+	counter_changed.emit(moves_left)
 
 	all_pieces = make_2d_array()
 	spawn_pieces()
@@ -242,6 +248,8 @@ func destroy_matched():
 	if was_matched:
 		score += match_score
 		score_changed.emit(score)
+		moves_left -= 1 
+		counter_changed.emit(moves_left)
 		collapse_timer.start()
 	else:
 		swap_back()
