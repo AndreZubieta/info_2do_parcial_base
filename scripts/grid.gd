@@ -49,12 +49,19 @@ var is_controlling = false
 #   signal counter_changed(restantes: int)        # movimientos o segundos, tú decides
 #   signal game_finished(gano: bool)
 # TODO (PARCIAL · B1/B2): declara aquí el puntaje y el contador (y sus señales, si las usas).
-
+var score: int = 0
+signal piece_destroyed(amount: int)
+signal score_changed(new_score: int)
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	state = MOVE
 	randomize()
+
+	score = 0
+
+	score_changed.emit(score)
+
 	all_pieces = make_2d_array()
 	spawn_pieces()
 
@@ -218,17 +225,23 @@ func find_matches():
 	
 func destroy_matched():
 	var was_matched = false
+	var match_score = 0
+
 	for i in width:
 		for j in height:
 			if all_pieces[i][j] != null and all_pieces[i][j].matched:
 				was_matched = true
 				# TODO (PARCIAL · B1): suma puntaje por cada pieza destruida (o por
 				# combinación) y emite score_changed para actualizar el HUD.
+				score += 100
+				score_changed.emit(score)
 				all_pieces[i][j].queue_free()
 				all_pieces[i][j] = null
 
 	move_checked = true
 	if was_matched:
+		score += match_score
+		score_changed.emit(score)
 		collapse_timer.start()
 	else:
 		swap_back()
