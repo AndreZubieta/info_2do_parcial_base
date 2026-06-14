@@ -66,15 +66,17 @@ func update_goal():
 		goal_label.text = "Goal\n%d" % level["goal_value"]
 
 	elif level["goal_type"] == "collect_color":
+		var remaining = level["goal_value"] - grid.collected
 		goal_label.text = "Goal\n%d %s" % [
-			level["goal_value"],
-			level["goal_color"]
+		max(remaining, 0),
+		level["goal_color"]
 		]
 
 func update_score(nuevo_puntaje: int) -> void:
 	current_score = nuevo_puntaje
 	# TODO (PARCIAL · B1): refleja current_score en score_label.text con el formato que prefieras.
 	score_label.text = "Score\n%d" % current_score
+	update_goal()
 
 func update_counter(restantes: int) -> void:
 	current_count = restantes
